@@ -1,0 +1,14 @@
+@namespace url(http://www.w3.org/1999/xhtml);
+
+@-moz-document url-prefix("http://127.0.0.1:8823/thread/"){
+
+	[aboneword]:after,
+	resContainer[abone] > .resHeader[aboneword]:after,
+	resContainer[abone] > .resNewHeader[aboneword]:after{
+		content: " (NGWord: " attr(aboneword) ")" !important;
+		color: #555 !important;
+		font-size: 12px !important;
+		text-decoration: none !important;
+	}
+
+}

@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<bindings xmlns="http://www.mozilla.org/xbl">
+<binding id="load">
+<implementation><constructor><![CDATA[
+window.addEventListener('DOMContentLoaded', function(){
+
+	Components.utils.import("resource://cah/ChaikaAboneManager+.js");
+
+	var func = BoardTree.initTree.toString();
+	func = func.replace('this.tree.builder.datasource = gBoard.itemsDoc.documentElement;',
+"		var source = gBoard.itemsDoc.documentElement;"+
+"		var items = source.getElementsByTagName('boarditem');"+
+"		var count = items.length;"+
+"       var hide_abone_default = ChaikaCore.pref.getBool('thread_hide_abone');"+
+"       var show_reason = ChaikaCore.pref.getBool('abone.show_reason_on_board');"+
+"       var converter = Components.classes['@mozilla.org/intl/scriptableunicodeconverter'].createInstance(Components.interfaces.nsIScriptableUnicodeConverter);"+
+"       converter.charset = 'Shift_JIS';"+
+"		var result;"+
+"	"+
+"		for(let i=0;i<count;i++){"+
+"           if(!items[i]) continue;"+
+"   "+
+"			var threadObj = {"+
+"				title: items[i].getAttribute('title'),"+
+"               plainURL: { spec: items[i].getAttribute('url') },"+
+"				boardURL: gBoard.url"+
+"			};"+
+"	"+
+"           var date = items[i].getAttribute('created');"+
+""+
+"			if(result = ChaikaAboneManager2.shouldAbone('', '', '', '', threadObj, '', true, '', date, '', '')){"+
+"				if((typeof result.hide) === 'boolean' ? result.hide : hide_abone_default){"+
+"					items[i].parentNode.removeChild(items[i]);"+
+"                   i--;"+
+"				}else{"+
+"					var reason = converter.ConvertToUnicode(result.reason);"+
+"                   if(show_reason){"+
+"						items[i].setAttribute('title', ' ***** ABONE ***** (NGWord: ' + reason + ')');"+
+"                   }else{"+
+"                       items[i].setAttribute('title', ' ***** ABONE ***** ');"+
+"                   }"+
+"				}"+
+"			}"+
+"		}"+
+"	"+
+"		this.tree.builder.datasource = source;"
+	).replace('this.', 'BoardTree.', 'g');
+
+	eval('BoardTree.initTree = ' + func);
+
+}, false);
+]]></constructor></implementation>
+</binding>
+</bindings>

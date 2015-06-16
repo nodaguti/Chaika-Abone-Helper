@@ -1,0 +1,102 @@
+<?xml version="1.0"?>
+
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://mozapps/content/preferences/preferences.css"?>
+<?xml-stylesheet href="chrome://browser/skin/preferences/preferences.css"?>
+
+<prefwindow id="cwhPrefs"
+            xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+            windowtype="Chaika Abone Helper:Options"
+            title="Chaika Abone Helper - Settings"
+            buttons="accept,cancel"
+            style="min-width: 38em;">
+
+	<script type="application/javascript">
+	<![CDATA[
+	const Ci = Components.interfaces;
+	const Cc = Components.classes;
+	const Cr = Components.results;
+
+	Components.utils.import("resource://chaika-modules/ChaikaCore.js");
+	Components.utils.import('resource://cah/ChaikaAboneManager+.js');
+
+	function openTab(url){
+		var wm = Cc["@mozilla.org/appshell/window-mediator;1"].getService(Ci.nsIWindowMediator);
+		var mainWindow = wm.getMostRecentWindow("navigator:browser");
+		mainWindow.gBrowser.selectedTab = mainWindow.gBrowser.addTab(url);
+	}
+
+	function checkUpdate(){
+		var nowVersion = ChaikaAboneManager2.getVersion();
+
+		var req = new XMLHttpRequest();
+		req.open('GET', 'http://bbs2ch.sourceforge.jp/uploader/upload.php?page=all', false);
+		req.overrideMimeType('text/plain; charset=euc-jp');
+		req.send(null);
+
+		var data = req.responseText;
+		var version = data.match(/Chaika\s*Abone\s*Helper\s*(\d+\.\d+\.\d+)([^<]+)/);
+		if(!version){
+			return alert('Access Error');
+		}
+		var tmp1 = version[1].split('.');
+		var tmp2 = nowVersion.split('.');
+
+		for(let i=0;i<tmp1.length;i++){
+			if(tmp1[i] > tmp2[i]){
+
+				var promptService = Cc["@mozilla.org/embedcomp/prompt-service;1"]
+									.getService(Ci.nsIPromptService);
+				var comformMsg = 'アップデートが見つかりました\n'
+								+'配布ページを開きますか(新規タブで開きます)?\n\n'
+								+'現在のバージョン: ' + nowVersion + '\n'
+								+'更新後のバージョン: ' + version[1] + '\n\n'
+								+'更新の詳細:\n' + version[2];
+				var result = promptService.confirm(window, 'Chaika Abone Helper', comformMsg);
+
+				if(result) openTab('http://bbs2ch.sourceforge.jp/uploader/upload.php?page=all');
+				return;
+			}
+		}
+		alert('お使いのChaika Abone Helperは最新です');
+	}
+	//]]>
+	</script>
+
+	<prefpane id="pane1" label="設定" flex="1">
+		<preferences>
+			<preference id="extensions.chaika.abone.show_reason_on_board" name="extensions.chaika.abone.show_reason_on_board" type="bool" />
+			<preference id="extensions.chaika.abone.show_reason_on_thread" name="extensions.chaika.abone.show_reason_on_thread" type="bool" />
+			<preference id="extensions.chaika.abone.auto_skin_mod" name="extensions.chaika.abone.auto_skin_mod" type="bool" />
+			<preference id="extensions.chaika.abone.show_context" name="extensions.chaika.abone.show_context" type="bool" />
+			<preference id="extensions.chaika.abone.show_context_only_2ch" name="extensions.chaika.abone.show_context_only_2ch" type="bool" />
+			<preference id="extensions.chaika.abone.show_manager" name="extensions.chaika.abone.show_manager" type="bool" />
+		</preferences>
+
+		<vbox>
+			<groupbox>
+				<caption label="NGワード" />
+				<description value="あぼーん時にヒットしたNGワードを表示する:" style="font-size: 100%;" />
+				<hbox>
+					<checkbox id="show_reason_on_board" preference="extensions.chaika.abone.show_reason_on_board" label="板" 
+								style="margin-left: 3em; margin-right: 1em;" class="show_reason" />
+					<checkbox id="show_reason_on_thread" preference="extensions.chaika.abone.show_reason_on_thread" label="スレ" class="show_reason" />
+				</hbox>
+				<checkbox id="auto_skin_mod" preference="extensions.chaika.abone.auto_skin_mod"
+								label="自動的にスキンを対応させる機能を有効にする" />
+			</groupbox>
+			<groupbox>
+				<caption label="右クリックあぼーん" />
+				<checkbox id="show_context" preference="extensions.chaika.abone.show_context" label="「NGワードに登録」をコンテキストメニューに追加する" />
+				<checkbox id="show_context_only2ch" preference="extensions.chaika.abone.show_context_only_2ch"
+								label="Chaika上でのみコンテキストメニューに表示する" />
+				<checkbox id="show_manager" preference="extensions.chaika.abone.show_manager"
+								label="直接登録せずにあぼーんマネージャを表示する" tooltiptext="高度な設定の場合はチェックに関係なくマネージャを表示します.また,チェックを外した場合は登録前に確認画面を表示します." />
+			</groupbox>
+		</vbox>
+
+		<hbox>
+			<button label="更新チェック" oncommand="checkUpdate();" style="width:10em;max-width:10em;" />
+		</hbox>
+	</prefpane>
+</prefwindow>

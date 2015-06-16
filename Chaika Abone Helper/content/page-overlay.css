@@ -1,0 +1,9 @@
+@namespace url(http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul);
+
+@-moz-document url-prefix("chaika://board/"){
+
+#chaikaBoardPage{
+	-moz-binding: url(chrome://cah/content/page-overlay.xml#load) !important;
+}
+
+}

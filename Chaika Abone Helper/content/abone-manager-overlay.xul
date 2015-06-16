@@ -1,0 +1,145 @@
+<?xml version="1.0"?>
+
+<overlay xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+	<script type="application/javascript" src="chrome://cah/content/abone-manager-overlay.js" />
+
+	<tabbox id="aboneManagerTabBox" flex="1">
+		<tabpanel orient="vertical" id="aboneHelperTab" style="overflow: auto;">
+			<hbox>
+				<vbox id="aboneADVTextBox"><!-- 他のタブと統一的にアクセスできるようにするためのダミーのID -->
+					<listbox id="aboneHelperListBox" flex="1" onselect="initAboneInfo(this.selectedIndex);" />
+					<hbox>
+						<button label="+" onclick="addAbone2()" />
+						<button label="-" onclick="removeAbone2()" />
+					</hbox>
+				</vbox>
+				<vbox id="aboneHelperEditPanel">
+					<groupbox>
+						<caption label="名称" />
+						<hbox>
+							<textbox id="aboneTitle" flex="1" />
+							<checkbox label="自動" id="autoSetTitle" oncommand="this.previousSibling.disabled = this.checked;" checked="checked" />
+						</hbox>
+					</groupbox>
+
+					<groupbox style="min-width: 580px;">
+						<caption label="条件" />
+						<vbox style="height: 300px; max-height: 300px; width: 650px; min-width: 650px; overflow: auto; overflow-x: hidden;">
+							<vbox id="tmp_condition" collapsed="true" style="width: 560px;">
+								<vbox style="border: 1px #ccc solid; padding: 0.5em;">
+									<hbox>
+										<menulist class="abone-adv-type">
+											<menupopup>
+												<menuitem label="名前" value="NAME" />
+												<menuitem label="メール" value="MAIL" />
+												<menuitem label="日付" value="DATE" />
+												<menuitem label="発信元" value="IP" />
+												<menuitem label="ホスト" value="HOST" />
+												<menuitem label="ID" value="ID" />
+												<menuitem label="BeID" value="BEID" />
+												<menuitem label="Be基礎番号" value="BEBASEID" />
+												<menuitem label="本文" value="RES" />
+												<menuitem label="スレタイ" value="THREAD" />
+												<menuitem label="板URL" value="BOARD" />
+												<menuitem label="スレURL" value="THREAD_URL" />
+											</menupopup>
+										</menulist>
+										<label value="が" />
+										<menulist class="abone-adv-str-type">
+											<menupopup>
+												<menuitem label="文字列" value="STR" />
+												<menuitem label="正規表現" value="REG" />
+											</menupopup>
+										</menulist>
+										<label value="の" />
+										<textbox  class="abone-adv-str" />
+										<menulist class="abone-adv-cond-str">
+											<menupopup>
+												<menuitem label="を含む" value="!==" />
+												<menuitem label="を含まない" value="===" />
+												<menuitem label="に一致する" value="ALL_EQUAL" />
+												<menuitem label="に一致しない" value="NOT_EQUAL" />
+											</menupopup>
+										</menulist>
+									</hbox>
+									<hbox>
+										<spacer flex="1" />
+										<checkbox label="大文字小文字を無視する" class="ignoreCase" />
+									</hbox>
+								</vbox>
+								<hbox>
+									<spacer flex="1" />
+									<menulist class="abone-adv-andor">
+										<menupopup>
+											<menuitem label="かつ" value="AND" />
+											<menuitem label="または" value="OR" />
+										</menupopup>
+									</menulist>
+									<button label="+" onclick="insertNewCondition(true);" />
+									<button label="-" onclick="deleteCondition(event);" />
+								</hbox>
+							</vbox>
+						</vbox>
+					</groupbox>
+
+					<groupbox>
+						<caption label="オプション" />
+
+						<hbox>
+							<label value="あぼーんする対象: " />
+							<radiogroup style="margin-top: -0.1em;" id="targetType">
+								<hbox>
+									<radio label="レス" value="RES" />
+									<radio label="スレッド" value="THREAD" />
+								</hbox>
+							</radiogroup>
+						</hbox>
+
+						<hbox>
+							<checkbox label="有効期限をつける: " id="enableExpire" />
+							<datepicker id="expire_date" type="popup" />
+							<timepicker id="expire_time" hideseconds="true" />
+							<button label="今日中のみ有効にする" onclick="setAsOnlyToday()" />
+						</hbox>
+
+						<hbox>
+							<label value="透明あぼーん: " />
+							<radiogroup style="margin-top: -0.1em;" id="hideAbone">
+								<hbox>
+									<radio label="デフォルトの設定に従う" value="DEFAULT" selected="selected" />
+									<radio label="する" value="TRUE" />
+									<radio label="しない" value="FALSE" />
+								</hbox>
+							</radiogroup>
+						</hbox>
+
+						<hbox>
+							<label value="連鎖あぼーん: " />
+							<radiogroup style="margin-top: -0.1em;" id="chainAbone">
+								<hbox>
+									<radio label="デフォルトの設定に従う" value="DEFAULT" selected="selected" />
+									<radio label="する" value="TRUE" />
+									<radio label="しない" value="FALSE" />
+								</hbox>
+							</radiogroup>
+						</hbox>
+
+						<checkbox label="ヒットしたレスのIDを自動的にNGIDに追加する" id="autoNGID" />
+					</groupbox>
+
+					<spacer flex="1" />
+				</vbox>
+			</hbox>
+			<hbox>
+				<button label="設定" onclick="openPreference()" />
+				<spacer flex="1" />
+				<button label="登録" onclick="editAbone()" />
+			</hbox>
+		</tabpanel>
+	</tabbox>
+
+	<script type="application/javascript">
+		window.addEventListener('load', startup_helper, false);
+		window.addEventListener('unload', shutdown_helper, false);
+	</script>
+</overlay>

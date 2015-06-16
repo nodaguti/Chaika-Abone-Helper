@@ -1,0 +1,9 @@
+content cah content/
+overlay chrome://browser/content/browser.xul chrome://cah/content/browser-overlay.xul
+overlay chrome://chaika/content/settings/abone-manager.xul chrome://cah/content/abone-manager-overlay.xul
+resource cah modules/
+
+#Component refistration
+component {0D15B29E-52F0-11DE-9836-8EA256D89593} components/fgICAHService.js
+contract @software.2ch.net/cah-service;1 {0D15B29E-52F0-11DE-9836-8EA256D89593}
+category profile-after-change CAHService @software.2ch.net/cah-service;1
